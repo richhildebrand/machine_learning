@@ -9,7 +9,8 @@ from helpers.pandas_helpers import rph_drop_columns
 from helpers.pandas_helpers import rph_create_output_file
 
 from helpers.xgboost_helpers import rph_cross_validation
-from helpers.xgboost_helpers import rph_find_column_to_drop
+from helpers.xgboost_helpers import rph_find_non_object_column_to_drop
+from helpers.xgboost_helpers import rph_find_encoded_column_to_drop
 
 from helpers.sklearn_helpers import rph_graph
 
@@ -27,22 +28,17 @@ standard_columns = rph_get_standard_columns(X)
 columns_to_keep = columns_to_encode + standard_columns
 
 X = X[columns_to_keep]
+
+rph_find_encoded_column_to_drop(y, X, test_data, columns_to_encode, id_column)
+#columns_to_drop = rph_find_non_object_column_to_drop(X, y, standard_columns)
+# columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF']
+# X = rph_drop_columns(X, columns_to_drop)
+# test_data = rph_drop_columns(test_data, columns_to_drop)
+
 X, test_data = rph_encode_columns(X, test_data, columns_to_encode)
-
-
-#__start adjust model__
-X = X.drop(columns=[id_column])
-scores, model = rph_cross_validation(X, y)
-print('\nstarting mea ' + str(scores.mean()))
-
-#columns_to_drop = rph_find_column_to_drop(X, y, standard_columns)
-columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF']
-X = rph_drop_columns(X, columns_to_drop)
-test_data = rph_drop_columns(test_data, columns_to_drop)
-
+X = X.drop(columns=id_column)
 scores, model = rph_cross_validation(X, y)
 print('ending mea ' + str(scores.mean()))
-#__end adjust model__
 
 
 rph_create_output_file(model, test_data, id_column, column_to_predict, output_file_path)

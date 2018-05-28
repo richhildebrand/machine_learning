@@ -2,6 +2,7 @@ from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Imputer as SimpleImputer
 from sklearn.model_selection import cross_val_score
+from helpers.pandas_helpers import rph_encode_columns
 
 
 def rph_cross_validation(train_X, train_y):
@@ -27,7 +28,7 @@ def rph_cross_validation(train_X, train_y):
     return xgb_cv, xgb_model
 
 
-def rph_find_column_to_drop(X, y, columns_to_check):
+def rph_find_non_object_column_to_drop(X, y, columns_to_check):
     columns_to_drop = []
     best_score = None
     for columnIndex in range(0, len(columns_to_check)):
@@ -42,3 +43,29 @@ def rph_find_column_to_drop(X, y, columns_to_check):
             columns_to_drop = [column]
             
     return columns_to_drop
+
+def rph_find_encoded_column_to_drop(y, X, test_data, columns_to_encode, id_column): 
+    results = []
+    for column in columns_to_encode[:2]:
+        test_data_copy = test_data.copy()
+        X_copy = X.copy()
+        modified_columns_to_encode = list(columns_to_encode)
+
+        modified_columns_to_encode = modified_columns_to_encode.remove(column)
+        X_copy = X_copy.drop(columns=[column, id_column])
+
+        X_result, test_data_copy = rph_encode_columns(X_copy, test_data_copy, modified_columns_to_encode)
+
+        scores, model = rph_cross_validation(X_result, y)
+        results.append((column, scores.mean()))
+        print(str(column) + ':' + str(scores.mean()))
+
+    order_and_display_results(results)
+
+
+def order_and_display_results(results):
+    print('\nshowing orderd results:')
+    results = sorted(results, key=lambda x: x[1])
+    for column, value in results:
+        print(str(column) + ':' + str(value))
+    print('')
