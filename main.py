@@ -3,6 +3,7 @@ from sklearn.preprocessing import Imputer as SimpleImputer
 
 from helpers.pandas_helpers import rph_get_columns_to_encode
 from helpers.pandas_helpers import rph_get_standard_columns
+from helpers.pandas_helpers import rph_drop_columns
 
 from helpers.xgboost_helpers import rph_cross_validation
 from helpers.xgboost_helpers import rph_find_column_to_drop
@@ -40,15 +41,8 @@ print('starting mea ' + str(scores.mean()))
 
 
 #columns_to_drop = rph_find_column_to_drop(X, y, standard_columns)
-columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF'] #16220.2109306
-#columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold'] #16163.8201291
-#columns_to_drop = ['Fireplaces', 'GarageArea', '1stFlrSF'] #16414.5766852
-#columns_to_drop = ['Fireplaces', 'MoSold', '1stFlrSF'] #16393.2369589
-
-print(columns_to_drop)
-print(X.columns)
-for column in columns_to_drop:
-    X = X.drop(columns=[column])
+columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF']
+X = rph_drop_columns(X, columns_to_drop)
     
 scores, model = rph_cross_validation(X, y)
 base_mea = scores.mean()
@@ -59,9 +53,7 @@ rph_graph(X, y, ['GarageCars', 'YrSold', 'LotArea'])
 
 
 #submit test data
-print(columns_to_drop)
-for column in columns_to_drop:
-    final_test_X = final_test_X.drop(columns=[column])
+final_test_X = rph_drop_columns(final_test_X, columns_to_drop)
 
 my_imputer = SimpleImputer()
 final_test_X  = my_imputer.fit_transform(final_test_X)
