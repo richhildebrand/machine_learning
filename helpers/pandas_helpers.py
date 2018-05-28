@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import Imputer as SimpleImputer
 
 def rph_get_X_y_and_test_data(train_file_path, test_file_path, column_to_predict):
     train_data = pd.read_csv('./data/house_prices/train.csv')
@@ -41,3 +42,15 @@ def rph_get_standard_columns(data):
         
     print("\nNon object columns: \n" + str(columns_to_return) + '\n')
     return columns_to_return
+
+def rph_create_output_file(model, test_data, id_column, column_to_predict, output_file_path):
+    test_X = test_data.drop(columns=[id_column])
+
+    my_imputer = SimpleImputer()
+    test_X  = my_imputer.fit_transform(test_X)
+
+    predictions = model.predict(test_X)
+
+    my_submission = pd.DataFrame({id_column: test_data[id_column], column_to_predict: predictions})
+    my_submission.to_csv(output_file_path, index=False)
+    print("\nCSV created")
