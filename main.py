@@ -8,6 +8,8 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.ensemble.partial_dependence import partial_dependence, plot_partial_dependence
 from sklearn.ensemble import GradientBoostingRegressor
 
+from helpers.xgboost_helpers import cross_val
+
 def get_columns_to_encode(candidate_train_predictors):
     low_cardinality_cols = [cname for cname in candidate_train_predictors.columns if 
                                 candidate_train_predictors[cname].nunique() < 10 and
@@ -47,28 +49,7 @@ final_test_X = final_test_data[columns_to_keep]
 final_test_X = pd.get_dummies(final_test_X, columns=columns_to_encode)
 X, final_test_X = X.align(final_test_X, join='inner', axis=1)
 
-def cross_val(train_X, train_y):
-    train_X, test_X, train_y, test_y = train_test_split(train_X, train_y, test_size = 0.30, random_state=1)
-
-    my_imputer = SimpleImputer()
-    train_X = my_imputer.fit_transform(train_X)
-    test_X = my_imputer.transform(test_X)
-    
-    early_stopping_rounds = 30
-    xgb_model = XGBRegressor(n_estimators=600, learning_rate=0.06)
-    fit_params={'early_stopping_rounds': early_stopping_rounds, 
-                'eval_metric': 'mae',
-                'verbose': False,
-                'eval_set': [[test_X, test_y]]}
-
-    xgb_cv = cross_val_score(xgb_model, train_X, train_y, 
-                             cv = 5, 
-                             scoring = 'neg_mean_absolute_error',
-                             fit_params = fit_params)
-    
-    xgb_model.fit(train_X, train_y, early_stopping_rounds=early_stopping_rounds, eval_set=[(test_X, test_y)], verbose=False)    
-    return xgb_cv, xgb_model
-
+cross_val(X ,y)
 
 def find_column_to_drop(X, columns_to_check):
     columns_to_drop = []
