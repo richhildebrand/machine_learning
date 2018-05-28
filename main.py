@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import Imputer as SimpleImputer
 
+from helpers.pandas_helpers import rph_get_X_y_and_test_data
 from helpers.pandas_helpers import rph_get_standard_columns
 from helpers.pandas_helpers import rph_get_columns_to_encode
 from helpers.pandas_helpers import rph_encode_columns
@@ -12,10 +13,11 @@ from helpers.xgboost_helpers import rph_find_column_to_drop
 from helpers.sklearn_helpers import rph_graph
 
 
+train_file_path = './data/house_prices/train.csv'
+test_file_path = './data/house_prices/test.csv'
+column_to_predict = 'SalePrice'
 
-data = pd.read_csv('./data/house_prices/train.csv')
-y = data['SalePrice']
-X = data.drop(columns=['SalePrice'])
+y, X, final_test_data = rph_get_X_y_and_test_data(train_file_path, test_file_path, column_to_predict)
 
 columns_to_encode = rph_get_columns_to_encode(X)
 print("Columns to encode: " + str(columns_to_encode))
@@ -25,11 +27,10 @@ print("Standard columns: " + str(standard_columns))
 
 columns_to_keep = columns_to_encode + standard_columns
 columns_to_keep.remove('Id')
-X = data[columns_to_keep]
+X = X[columns_to_keep]
 
 #ensure encoded columns will match
-final_test_data = pd.read_csv('./data/house_prices/test.csv')
-final_test_X = final_test_data[columns_to_keep]
+
 X, final_test_X = rph_encode_columns(X, final_test_data, columns_to_encode)
 
 
