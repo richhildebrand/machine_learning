@@ -17,9 +17,9 @@ def rph_drop_columns(data_frame, columns_to_drop):
 
     return data_frame
 
-def rph_get_columns_to_encode(candidate_train_predictors):
+def rph_get_columns_to_encode(candidate_train_predictors, max_unique_values):
     low_cardinality_cols = [cname for cname in candidate_train_predictors.columns if 
-                                candidate_train_predictors[cname].nunique() < 10 and
+                                candidate_train_predictors[cname].nunique() < max_unique_values and
                                  candidate_train_predictors[cname].dtype == "object"]
     
 

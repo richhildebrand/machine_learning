@@ -23,7 +23,9 @@ id_column = 'Id'
 
 y, X, test_data = rph_get_X_y_and_test_data(train_file_path, test_file_path, column_to_predict)
 
-columns_to_encode = rph_get_columns_to_encode(X)
+columns_to_encode = rph_get_columns_to_encode(X, 20)
+print(len(columns_to_encode))
+
 standard_columns = rph_get_standard_columns(X)
 columns_to_keep = columns_to_encode + standard_columns
 
