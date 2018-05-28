@@ -34,8 +34,9 @@ X = X[columns_to_keep]
 #rph_find_encoded_column_to_drop(y, X, test_data, columns_to_encode, id_column)
 #columns_to_drop = rph_find_non_object_column_to_drop(X, y, standard_columns)
 
+encoded_columns_to_drop = []
 #encoded_columns_to_drop = ['CentralAir']
-encoded_columns_to_drop = ['CentralAir', 'GarageType']
+#encoded_columns_to_drop = ['CentralAir', 'GarageType']
 for column in encoded_columns_to_drop: columns_to_encode.remove(column)
 
 
