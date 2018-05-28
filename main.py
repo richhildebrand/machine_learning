@@ -8,7 +8,8 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.ensemble.partial_dependence import partial_dependence, plot_partial_dependence
 from sklearn.ensemble import GradientBoostingRegressor
 
-from helpers.xgboost_helpers import cross_val
+from helpers.xgboost_helpers import rph_cross_validation
+from helpers.xgboost_helpers import rph_find_column_to_drop
 
 def get_columns_to_encode(candidate_train_predictors):
     low_cardinality_cols = [cname for cname in candidate_train_predictors.columns if 
@@ -49,31 +50,13 @@ final_test_X = final_test_data[columns_to_keep]
 final_test_X = pd.get_dummies(final_test_X, columns=columns_to_encode)
 X, final_test_X = X.align(final_test_X, join='inner', axis=1)
 
-cross_val(X ,y)
-
-def find_column_to_drop(X, columns_to_check):
-    columns_to_drop = []
-    best_score = None
-    for columnIndex in range(0, len(columns_to_check)):
-        column = X.columns[columnIndex]
-        train_X_copy = X.copy()
-        train_X_copy = train_X_copy.drop(columns=[column])
-        scores, model = cross_val(train_X_copy, y)
-        adjusted_score = -1 * scores.mean()
-        print('mea without ' + column + ' ' + str(adjusted_score))
-        if not best_score or best_score > adjusted_score: 
-            best_score = adjusted_score
-            columns_to_drop = [column]
-            
-    return columns_to_drop
-
 #find columns to remove
-scores, model = cross_val(X, y)
+scores, model = rph_cross_validation(X, y)
 base_mea = scores.mean()
 print('starting mea ' + str(scores.mean()))
 
 
-#columns_to_drop = find_column_to_drop(X, standard_columns)
+#columns_to_drop = rph_find_column_to_drop(X, y, standard_columns)
 columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF'] #16220.2109306
 #columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold'] #16163.8201291
 #columns_to_drop = ['Fireplaces', 'GarageArea', '1stFlrSF'] #16414.5766852
@@ -84,7 +67,7 @@ print(X.columns)
 for column in columns_to_drop:
     X = X.drop(columns=[column])
     
-scores, model = cross_val(X, y)
+scores, model = rph_cross_validation(X, y)
 base_mea = scores.mean()
 print('ending mea ' + str(scores.mean()))
 
