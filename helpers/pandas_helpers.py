@@ -14,6 +14,13 @@ def rph_get_columns_to_encode(candidate_train_predictors):
     
     return low_cardinality_cols
 
+def rph_encode_columns(train_X, test_data, columns_to_encode):
+    train_X = pd.get_dummies(train_X, columns=columns_to_encode)
+    test_data = pd.get_dummies(test_data, columns=columns_to_encode)
+
+    return train_X.align(test_data, join='inner', axis=1)
+
+
 def rph_get_standard_columns(data):
     standard_columns = data.select_dtypes(exclude=['object']).columns
     
