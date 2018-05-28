@@ -21,6 +21,8 @@ def rph_get_columns_to_encode(candidate_train_predictors):
                                 candidate_train_predictors[cname].nunique() < 10 and
                                  candidate_train_predictors[cname].dtype == "object"]
     
+
+    print("\nColumns to encode: \n" + str(low_cardinality_cols) + '\n')
     return low_cardinality_cols
 
 def rph_encode_columns(train_X, test_data, columns_to_encode):
@@ -37,4 +39,5 @@ def rph_get_standard_columns(data):
     for column in standard_columns:
         columns_to_return.append(column)
         
+    print("\nNon object columns: \n" + str(columns_to_return) + '\n')
     return columns_to_return

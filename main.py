@@ -16,17 +16,15 @@ from helpers.sklearn_helpers import rph_graph
 train_file_path = './data/house_prices/train.csv'
 test_file_path = './data/house_prices/test.csv'
 column_to_predict = 'SalePrice'
+id_column = 'Id'
 
 y, X, final_test_data = rph_get_X_y_and_test_data(train_file_path, test_file_path, column_to_predict)
 
 columns_to_encode = rph_get_columns_to_encode(X)
-print("Columns to encode: " + str(columns_to_encode))
-
 standard_columns = rph_get_standard_columns(X)
-print("Standard columns: " + str(standard_columns))
-
 columns_to_keep = columns_to_encode + standard_columns
-columns_to_keep.remove('Id')
+columns_to_keep.remove(id_column)
+
 X = X[columns_to_keep]
 
 #ensure encoded columns will match
