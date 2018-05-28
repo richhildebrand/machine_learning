@@ -5,37 +5,26 @@ from sklearn.preprocessing import Imputer as SimpleImputer
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_absolute_error
-from sklearn.ensemble.partial_dependence import partial_dependence, plot_partial_dependence
 from sklearn.ensemble import GradientBoostingRegressor
+
+from helpers.pandas_helpers import rph_get_columns_to_encode
+from helpers.pandas_helpers import rph_get_standard_columns
 
 from helpers.xgboost_helpers import rph_cross_validation
 from helpers.xgboost_helpers import rph_find_column_to_drop
 
-def get_columns_to_encode(candidate_train_predictors):
-    low_cardinality_cols = [cname for cname in candidate_train_predictors.columns if 
-                                candidate_train_predictors[cname].nunique() < 10 and
-                                 candidate_train_predictors[cname].dtype == "object"]
-    
-    return low_cardinality_cols
+from helpers.sklearn_helpers import rph_graph
 
-def get_standard_columns(data):
-    standard_columns = data.select_dtypes(exclude=['object']).columns
-    
-    columns_to_return = []
-    for column in standard_columns:
-        columns_to_return.append(column)
-        
-    return columns_to_return
 
 data = pd.read_csv('./data/house_prices/train.csv')
 data.dropna(axis=0, subset=['SalePrice'], inplace=True)
 y = data.SalePrice
 X = data.drop(columns=['SalePrice'])
 
-columns_to_encode = get_columns_to_encode(X)
+columns_to_encode = rph_get_columns_to_encode(X)
 print("Columns to encode: " + str(columns_to_encode))
 
-standard_columns = get_standard_columns(X)
+standard_columns = rph_get_standard_columns(X)
 print("Standard columns: " + str(standard_columns))
 
 columns_to_keep = columns_to_encode + standard_columns
@@ -72,17 +61,7 @@ base_mea = scores.mean()
 print('ending mea ' + str(scores.mean()))
 
 
-#fun with graphs
-my_model = GradientBoostingRegressor()
-regression_columns = ['GarageCars', 'YrSold', 'LotArea']
-my_imputer = SimpleImputer()
-X_regression = my_imputer.fit_transform(X)
-my_model.fit(X_regression, y)
-my_plots = plot_partial_dependence(my_model,       
-                                   features=[0, 1, 2], # column numbers of plots we want to show
-                                   X=X_regression,            # raw predictors data.
-                                   feature_names=regression_columns, # labels on graphs
-                                   grid_resolution=10) # number of values to plot on x axis
+rph_graph(X, y, ['GarageCars', 'YrSold', 'LotArea'])
 
 
 #submit test data
