@@ -46,7 +46,7 @@ def rph_find_non_object_column_to_drop(X, y, columns_to_check):
 
 def rph_find_encoded_column_to_drop(y, X, test_data, columns_to_encode, id_column): 
     results = []
-    for column in columns_to_encode[:2]:
+    for column in columns_to_encode:
         test_data_copy = test_data.copy()
         X_copy = X.copy()
         modified_columns_to_encode = list(columns_to_encode)

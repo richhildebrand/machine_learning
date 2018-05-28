@@ -29,14 +29,20 @@ columns_to_keep = columns_to_encode + standard_columns
 
 X = X[columns_to_keep]
 
-rph_find_encoded_column_to_drop(y, X, test_data, columns_to_encode, id_column)
+#rph_find_encoded_column_to_drop(y, X, test_data, columns_to_encode, id_column)
 #columns_to_drop = rph_find_non_object_column_to_drop(X, y, standard_columns)
-# columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF']
-# X = rph_drop_columns(X, columns_to_drop)
-# test_data = rph_drop_columns(test_data, columns_to_drop)
+
+encoded_columns_to_drop = ['CentralAir']
+for column in encoded_columns_to_drop: columns_to_encode.remove(column)
+
+
+columns_to_drop = ['Fireplaces', 'GarageArea', 'MoSold', '1stFlrSF'] + encoded_columns_to_drop
+X = rph_drop_columns(X, columns_to_drop)
+test_data = rph_drop_columns(test_data, columns_to_drop)
 
 X, test_data = rph_encode_columns(X, test_data, columns_to_encode)
 X = X.drop(columns=id_column)
+
 scores, model = rph_cross_validation(X, y)
 print('ending mea ' + str(scores.mean()))
 
