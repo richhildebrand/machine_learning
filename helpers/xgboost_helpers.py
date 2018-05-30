@@ -6,7 +6,7 @@ from helpers.pandas_helpers import rph_encode_columns
 
 
 def rph_cross_validation(train_X, train_y):
-    train_X, test_X, train_y, test_y = train_test_split(train_X, train_y, test_size = 0.30, random_state=1)
+    train_X, test_X, train_y, test_y = train_test_split(train_X, train_y, test_size = 0.20, random_state=1)
 
     my_imputer = SimpleImputer()
     train_X = my_imputer.fit_transform(train_X)
