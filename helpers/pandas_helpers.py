@@ -2,11 +2,11 @@ import pandas as pd
 from sklearn.preprocessing import Imputer as SimpleImputer
 
 def rph_get_X_y_and_test_data(train_file_path, test_file_path, column_to_predict):
-    train_data = pd.read_csv('./data/house_prices/train.csv')
+    train_data = pd.read_csv(train_file_path)
     train_y = train_data[column_to_predict]
     train_X = train_data.drop(columns=[column_to_predict])
 
-    test_data = pd.read_csv('./data/house_prices/test.csv')
+    test_data = pd.read_csv(test_file_path)
 
     return train_y, train_X, test_data
 
